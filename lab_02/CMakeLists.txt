@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(lab_01)
+project(lab_02)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_AUTOMOC ON)
@@ -15,24 +15,21 @@ find_package(Qt6 COMPONENTS
         Widgets
         REQUIRED)
 
-add_executable(lab_01
-        figures.cpp
-        figures.h
-        lan_01.pro
-        lan_01.pro.user
+add_executable(lab_02
+        lab_02.pro
         main.cpp
-        mainwindow.ui
-        mainwindow.h
         mainwindow.cpp
-        myerrors.cpp
-        myerrors.h
-        )
+        inc/mainwindow.h
+        mainwindow.ui
+        Figure.cpp
+        inc/Figure.h
+        MyErrors.cpp
+        inc/MyErrors.h)
 
-target_link_libraries(lab_01
+target_link_libraries(lab_02
         Qt::Core
         Qt::Gui
         Qt::Widgets
         )
 
-
-include_directories(../build-lab_01-Desktop_Qt_6_2_3_MinGW_64_bit-Debug)
+include_directories(./inc)
