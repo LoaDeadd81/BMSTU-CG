@@ -6,21 +6,19 @@
 #include <QBrush>
 #include <QGraphicsTextItem>
 #include <QFont>
-
-#include <QVector>
 #include <QString>
-
+#include <vector>
 #include <cmath>
 
 #include "MyErrors.h"
-
 #include "Figure.h"
 
-#define RECT 0
-#define L_CIRCLE 1
-#define R_CIRCLE 2
-#define UP_ELIPSE 3
-#define DOWN_ELIPSE 4
+using namespace std;
+
+#define LEFT 0
+#define UP 1
+#define RIGHT 2
+#define DOWN 3
 
 class Point
 {
@@ -63,6 +61,8 @@ public:
 
     Point get_center();
 
+    double get_len();
+
     void draw(QGraphicsScene *scene, QPen &pen);
 
     void move(double dx, double dy);
@@ -72,19 +72,7 @@ public:
     void rotate(Point center, double degree);
 };
 
-class Shape
-{
-public:
-    virtual void draw(QGraphicsScene *scene, QPen &pen) = 0;
-
-    virtual void move(double dx, double dy) = 0;
-
-    virtual void scale(Point center, double kx, double ky) = 0;
-
-    virtual void rotate(Point center, double degree) = 0;
-};
-
-class Rectangle : public Shape
+class Rectangle
 {
 private:
     Line sides[4];
@@ -102,11 +90,13 @@ public:
 
     void rotate(Point center, double degree);
 
+    Line get_side(int i);
+
     Point get_center();
 
 };
 
-class Ellipse : public Shape
+class Ellipse
 {
 private:
     Point ellipse_center;
@@ -115,7 +105,7 @@ private:
 public:
     Ellipse();
 
-    Ellipse(Point a, Point b, Point c, Point d);
+    Ellipse(Point center, double a, double b, double start, double end, double n);
 
     void draw(QGraphicsScene *scene, QPen &pen);
 
@@ -129,15 +119,15 @@ public:
 class Figure
 {
 private:
-    QVector<Shape *> shapes_vec;
+    Rectangle rect;
+    Ellipse ellipses[2];
+    Ellipse circles[2];
     Point figure_center;
 
 public:
     Figure();
 
-    Figure(Rectangle rect);
-
-    void initial_draw(QGraphicsScene *scene, QPen &pen);
+    Figure(double width, double height, double ellipse_b, QGraphicsScene *scene);
 
     void draw(QGraphicsScene *scene, QPen &pen);
 
@@ -147,13 +137,7 @@ public:
 
     void rotate(Point center, double degree);
 
-    void append(Shape *shape);
-
-    void remove(int i);
-
-    void set_default(QGraphicsScene *scene);
-
-    ~Figure();
+    Point get_center();
 };
 
 #endif

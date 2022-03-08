@@ -19,4 +19,20 @@ class LineError : public Error
 public:
     LineError(QString message);
 };
+
+class InputError : public Error
+{
+private:
+
+public:
+    InputError(QString message);
+};
+
+class FigureError : public Error
+{
+private:
+
+public:
+    FigureError(QString message);
+};
 #endif

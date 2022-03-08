@@ -1,6 +1,6 @@
 #include "Figure.h"
 
-double DegreToRadians(double degree)
+double DegreeToRadians(double degree)
 {
     return degree * (M_PI / 180.0);
 }
@@ -30,11 +30,14 @@ void Point::draw(QGraphicsScene *scene, QPen &pen, QBrush &brush, int r)
     double height = scene->height();
     scene->addEllipse(x - r / 2, height - y - r / 2, r, r, pen, brush);
     QGraphicsTextItem *label;
-    QFont font = QFont("sans", 12);
-    label = scene->addText("msg", font);
+    QFont font = QFont("sans", 14);
+    QString msg = "(%1, %2)";
+    msg = msg.arg(x).arg(y);
+    label = scene->addText(msg, font);
     label->setX(x - label->boundingRect().width() / 2);
     label->setY(height - y - 2 - label->boundingRect().height());
 }
+
 
 void Point::move(double dx, double dy)
 {
@@ -48,11 +51,13 @@ void Point::scale(Point center, double kx, double ky)
     y = ky * y + (1 - ky) * center.get_y();
 }
 
+//todo инвертировать поворот
 void Point::rotate(Point center, double degree)
 {
-    double radians = DegreToRadians(degree);
-    x = center.get_x() + (x - center.get_x()) * cos(radians)
-        + (y - center.get_y()) * sin(radians);
+    double radians = DegreeToRadians(degree);
+    double dx = x - center.get_x(), dy = y - center.get_y();
+    x = center.get_x() + dx * cos(radians) + dy * sin(radians);
+    y = center.get_y() - dx * sin(radians) + dy * cos(radians);
 }
 
 bool Point::operator==(const Point &point) const
@@ -90,6 +95,12 @@ Point Line::get_center()
 {
     double x = (begin.get_x() + end.get_x()) / 2.0, y = (begin.get_y() + end.get_y()) / 2.0;
     return Point(x, y);
+}
+
+double Line::get_len()
+{
+    double dx = end.get_x() - begin.get_x(), dy = end.get_y() - begin.get_y();
+    return sqrt(dx * dx + dy * dy);
 }
 
 void Line::draw(QGraphicsScene *scene, QPen &pen)
@@ -131,7 +142,7 @@ Rectangle::Rectangle(Point a, Point b, Point c, Point d)
 
 void Rectangle::draw(QGraphicsScene *scene, QPen &pen)
 {
-    for (auto &side: sides)
+    for (auto side: sides)
         side.draw(scene, pen);
 }
 
@@ -156,6 +167,13 @@ void Rectangle::rotate(Point center, double degree)
     rect_center.rotate(center, degree);
 }
 
+Line Rectangle::get_side(int i)
+{
+    if(i < 0 || i > 3)
+        throw FigureError("Выход за пределы массива сторон.");
+    return sides[i];
+}
+
 Point Rectangle::get_center()
 {
     double x = sides[0].get_center().get_x();
@@ -163,71 +181,144 @@ Point Rectangle::get_center()
     return Point(x, y);
 }
 
+Ellipse::Ellipse()
+{
+
+}
+
+Ellipse::Ellipse(Point center, double a, double b, double start, double end, double n)
+        : ellipse_center(center), a(a), b(b)
+{
+    double start_rad = DegreeToRadians(start), end_rad = DegreeToRadians(end);
+    int num_point = (n / 360.0) * fabs(end - start);
+    double d_fi = fabs(end_rad - start_rad) / (num_point - 1);
+    double d_fi_cos = cos(d_fi), d_fi_sin = sin(d_fi);
+
+    double x1 = center.get_x() + a * cos(start_rad), y1 = center.get_y() + b * sin(start_rad);
+    point_vec.append({x1, y1});
+    double xi = center.get_x() + (x1 - center.get_x()) * d_fi_cos - (a / b) * (y1 - center.get_y()) * d_fi_sin,
+            yi = center.get_y() + (b / a) * (x1 - center.get_x()) * d_fi_sin + (y1 - center.get_y()) * d_fi_cos;
+    point_vec.append({xi, y1});
+
+    for (int i = 0; i < num_point - 2; i++)
+    {
+        double x_tmp = center.get_x() + (xi - center.get_x()) * d_fi_cos - (a / b) * (yi - center.get_y()) * d_fi_sin,
+                y_tmp = center.get_y() + (b / a) * (xi - center.get_x()) * d_fi_sin + (yi - center.get_y()) * d_fi_cos;
+        point_vec.append({x_tmp, y_tmp});
+        xi = x_tmp;
+        yi = y_tmp;
+    }
+    int z = 0;
+}
+
+void Ellipse::draw(QGraphicsScene *scene, QPen &pen)
+{
+    for (int i = 0; i < point_vec.size() - 1; i++)
+    {
+        Line tmp({point_vec.at(i), point_vec.at(i + 1)});
+        tmp.draw(scene, pen);
+    }
+}
+
+void Ellipse::move(double dx, double dy)
+{
+    for (auto &item: point_vec)
+        item.move(dx, dy);
+    ellipse_center.move(dx, dy);
+}
+
+void Ellipse::scale(Point center, double kx, double ky)
+{
+    for (auto &item: point_vec)
+        item.scale(center, kx, ky);
+    ellipse_center.scale(center, kx, ky);
+}
+
+void Ellipse::rotate(Point center, double degree)
+{
+    for (auto &item: point_vec)
+        item.rotate(center, degree);
+    ellipse_center.rotate(center, degree);
+}
+
 Figure::Figure()
 {
 
 }
 
-Figure::Figure(Rectangle rect)
+Figure::Figure(double width, double height, double ellipse_b, QGraphicsScene *scene)
 {
-    Rectangle *cur_rect = new Rectangle(rect);
-    shapes_vec.append(cur_rect);
+    double k = 4;
+    if (width < 0)
+        throw FigureError("Ширина прямоугольника должна быть больше нуля");
+    if (height < 0)
+        throw FigureError("Высота прямоугольника должна быть больше нуля");
+    if (ellipse_b < 0)
+        throw FigureError("Полуось эллипса должна быть больше нуля");
+    double sc_width = scene->width(), sc_height = scene->height();
+    Point center(sc_width / 2.0, sc_height / 2.0);
+    figure_center = center;
+    double k_w = sc_width / (width * k), k_h = sc_height / (height * k);
+    double res_k = (k_w < k_h) ? k_w : k_h;
+    width /= 2.0;
+    height /= 2.0;
+    rect = Rectangle({center.get_x() - width * res_k, center.get_y() - height * res_k},
+                               {center.get_x() - width * res_k, center.get_y() + height * res_k},
+                               {center.get_x() + width * res_k, center.get_y() + height * res_k},
+                               {center.get_x() + width * res_k, center.get_y() - height * res_k});
+    ellipses[0] = Ellipse(rect.get_side(UP).get_center(), rect.get_side(UP).get_len() / 2.0,
+                           ellipse_b * res_k, 0,180, 360);
+    ellipses[1] = Ellipse(rect.get_side(DOWN).get_center(), rect.get_side(DOWN).get_len() / 2.0,
+                               ellipse_b * res_k, 180,360, 360);
+    circles[0] = Ellipse(rect.get_side(LEFT).get_center(), rect.get_side(LEFT).get_len() / 2.0,
+                             rect.get_side(LEFT).get_len() / 2.0, 90,270, 360);
+    circles[1] = Ellipse(rect.get_side(RIGHT).get_center(), rect.get_side(RIGHT).get_len() / 2.0,
+                              rect.get_side(RIGHT).get_len() / 2.0, -90,90, 360);
 }
-
-
 
 void Figure::draw(QGraphicsScene *scene, QPen &pen)
 {
     scene->clear();
-    for (auto item: shapes_vec)
-        item->draw(scene, pen);
+    QBrush brush_point = QBrush(QBrush(Qt::black, Qt::SolidPattern));
+    figure_center.draw(scene, pen, brush_point, 4);
+    rect.draw(scene, pen);
+    ellipses[0].draw(scene, pen);
+    ellipses[1].draw(scene, pen);
+    circles[0].draw(scene, pen);
+    circles[1].draw(scene, pen);
 }
 
 void Figure::move(double dx, double dy)
 {
-    for (auto item: shapes_vec)
-        item->move(dx, dy);
+    rect.move(dx, dy);
+    ellipses[0].move(dx, dy);
+    ellipses[1].move(dx, dy);
+    circles[0].move(dx, dy);
+    circles[1].move(dx, dy);
+    figure_center.move(dx, dy);
 }
 
 void Figure::scale(Point center, double kx, double ky)
 {
-    for (auto item: shapes_vec)
-        item->scale(center, kx, ky);
+    rect.scale(center, kx, ky);
+    ellipses[0].scale(center, kx, ky);
+    ellipses[1].scale(center, kx, ky);
+    circles[0].scale(center, kx, ky);
+    circles[1].scale(center, kx, ky);
+    figure_center.scale(center, kx, ky);
 }
 
 void Figure::rotate(Point center, double degree)
 {
-    for (auto item: shapes_vec)
-        item->rotate(center, degree);
+    rect.rotate(center, degree);
+    ellipses[0].rotate(center, degree);
+    ellipses[1].rotate(center, degree);
+    circles[0].rotate(center, degree);
+    circles[1].rotate(center, degree);
+    figure_center.rotate(center, degree);
 }
 
-void Figure::append(Shape *shape)
+Point Figure::get_center()
 {
-    shapes_vec.push_back(shape);
-}
-
-void Figure::remove(int i)
-{
-    shapes_vec.remove(i);
-}
-
-void Figure::set_default(QGraphicsScene *scene)
-{
-    double default_width = 50, default_height = 30;
-    double default_k = 2;
-    double width = scene->width(), height = scene->height();
-    Point center(width / 2.0, height / 2.0);
-    double k_w = width / (default_width * 2 * default_k), k_h = height / (default_height * 2 * default_k);
-    double k = (k_w < k_h) ? k_w : k_h;
-    auto *rect = new Rectangle({center.get_x() - default_width * k, center.get_y() - default_height * k},
-                               {center.get_x() - default_width * k, center.get_y() + default_height * k},
-                               {center.get_x() + default_width * k, center.get_y() + default_height * k},
-                               {center.get_x() + default_width * k, center.get_y() - default_height * k});
-    shapes_vec.append(rect);
-}
-
-Figure::~Figure()
-{
-    for (auto item: shapes_vec)
-        delete item;
+    return figure_center;
 }

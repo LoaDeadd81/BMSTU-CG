@@ -8,7 +8,6 @@ set(CMAKE_AUTOUIC ON)
 
 set(CMAKE_PREFIX_PATH "C:\\Qt\\6.2.3\\mingw_64\\lib\\cmake\\")
 
-
 find_package(Qt6 COMPONENTS
         Core
         Gui
@@ -17,6 +16,7 @@ find_package(Qt6 COMPONENTS
 
 add_executable(lab_02
         lab_02.pro
+        lab_02.pro.user
         main.cpp
         mainwindow.cpp
         inc/mainwindow.h
@@ -24,7 +24,10 @@ add_executable(lab_02
         Figure.cpp
         inc/Figure.h
         MyErrors.cpp
-        inc/MyErrors.h)
+        inc/MyErrors.h
+        Pair.cpp
+        inc/Pair.h
+        )
 
 target_link_libraries(lab_02
         Qt::Core
