@@ -2,7 +2,6 @@
 #include "ui_mainwindow.h"
 
 //todo протестировать
-//todo увеличить шрифт
 double checked_read(QLineEdit *lineEdit1);
 
 Pair<double> checked_pair_read(QLineEdit *lineEdit1, QLineEdit *lineEdit2);
@@ -28,6 +27,11 @@ void MainWindow::on_ParamButton_clicked()
     {
         if (!ui->ResView->scene())
         {
+            create_scene();
+        }
+        else
+        {
+            delete ui->ResView->scene();
             create_scene();
         }
         create_figure();
@@ -58,9 +62,10 @@ void MainWindow::on_MoveButton_clicked()
         Pair<double> val;
         val = checked_pair_read(ui->dxLineEdit, ui->dyLineEdit);
         double dx = val.get_first(), dy = val.get_second();
+        Figure figure_copy = figure;
         figure.move(dx, dy);
         figure.draw(ui->ResView->scene(), main_pen);
-        push_action({figure, QString("Смещение на (%1, %2)").arg(dx).arg(dy)});
+        push_action({figure_copy, QString("Смещение на (%1, %2)").arg(dx).arg(dy)});
     }
     catch (InputError &e)
     {
@@ -77,9 +82,10 @@ void MainWindow::on_ScaleButton_clicked()
         val = checked_pair_read(ui->kxLineEdit, ui->kyLineEdit);
         double kx = val.get_first(), ky = val.get_second();
         Point center = this->get_transform_center();
+        Figure figure_copy = figure;
         figure.scale(center, kx, ky);
         figure.draw(ui->ResView->scene(), main_pen);
-        push_action({figure, QString("Маштабирование в (%1, %2) раза").arg(kx).arg(ky)});
+        push_action({figure_copy, QString("Маштабирование в (%1, %2) раза").arg(kx).arg(ky)});
     }
     catch (InputError &e)
     {
@@ -94,9 +100,10 @@ void MainWindow::on_RotateButton_clicked()
     {
         double degree = checked_read(ui->DegreeLineEdit);
         Point center = this->get_transform_center();
+        Figure figure_copy = figure;
         figure.rotate(center, degree);
         figure.draw(ui->ResView->scene(), main_pen);
-        push_action({figure, QString("Поворот на %1 градусов").arg(degree)});
+        push_action({figure_copy, QString("Поворот на %1 градусов").arg(degree)});
     }
     catch (InputError &e)
     {
@@ -104,7 +111,7 @@ void MainWindow::on_RotateButton_clicked()
     }
 }
 
-//todo исправить отмену поворотов
+
 void MainWindow::on_CancelButton_clicked()
 {
     if (is_empty_action_list())
@@ -177,8 +184,13 @@ Pair<double> checked_pair_read(QLineEdit *lineEdit1, QLineEdit *lineEdit2)
 void show_error(QString title, QString message)
 {
     QErrorMessage error_msg;
+    error_msg.setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    error_msg.setStyleSheet("QLabel{min-height: 100px; font-size: 100px;}");
     error_msg.showMessage(message);
     error_msg.setWindowTitle(title);
+    QFont font;
+    font.setPointSize(14);
+    error_msg.setFont(font);
     error_msg.exec();
 }
 

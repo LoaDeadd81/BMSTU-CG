@@ -25,14 +25,16 @@ double Point::get_y()
     return y;
 }
 
-void Point::draw(QGraphicsScene *scene, QPen &pen, QBrush &brush, int r)
+void Point::draw(QGraphicsScene *scene, QPen &pen, QBrush &brush, int r, double k)
 {
     double height = scene->height();
     scene->addEllipse(x - r / 2, height - y - r / 2, r, r, pen, brush);
     QGraphicsTextItem *label;
     QFont font = QFont("sans", 14);
     QString msg = "(%1, %2)";
-    msg = msg.arg(x).arg(y);
+    Point copy = *this;
+    copy /= k;
+    msg = msg.arg(copy.x).arg(copy.get_y());
     label = scene->addText(msg, font);
     label->setX(x - label->boundingRect().width() / 2);
     label->setY(height - y - 2 - label->boundingRect().height());
@@ -51,7 +53,7 @@ void Point::scale(Point center, double kx, double ky)
     y = ky * y + (1 - ky) * center.get_y();
 }
 
-//todo инвертировать поворот
+
 void Point::rotate(Point center, double degree)
 {
     double radians = DegreeToRadians(degree);
@@ -68,6 +70,26 @@ bool Point::operator==(const Point &point) const
 bool Point::operator!=(const Point &point) const
 {
     return !(*this == point);
+}
+
+Point &Point::operator/=(double k)
+{
+    this->x /= k;
+    this->y /= k;
+    return *this;
+}
+
+Point &Point::operator*=(double k)
+{
+    this->x *= k;
+    this->y *= k;
+    return *this;
+}
+
+Point Point::operator/(double k)
+{
+    Point a = *this;
+    return a /= k;
 }
 
 Line::Line()
@@ -259,17 +281,17 @@ Figure::Figure(double width, double height, double ellipse_b, QGraphicsScene *sc
     Point center(sc_width / 2.0, sc_height / 2.0);
     figure_center = center;
     double k_w = sc_width / (width * k), k_h = sc_height / (height * k);
-    double res_k = (k_w < k_h) ? k_w : k_h;
+    proport_k = (k_w < k_h) ? k_w : k_h;
     width /= 2.0;
     height /= 2.0;
-    rect = Rectangle({center.get_x() - width * res_k, center.get_y() - height * res_k},
-                               {center.get_x() - width * res_k, center.get_y() + height * res_k},
-                               {center.get_x() + width * res_k, center.get_y() + height * res_k},
-                               {center.get_x() + width * res_k, center.get_y() - height * res_k});
+    rect = Rectangle({center.get_x() - width * proport_k, center.get_y() - height * proport_k},
+                               {center.get_x() - width * proport_k, center.get_y() + height * proport_k},
+                               {center.get_x() + width * proport_k, center.get_y() + height * proport_k},
+                               {center.get_x() + width * proport_k, center.get_y() - height * proport_k});
     ellipses[0] = Ellipse(rect.get_side(UP).get_center(), rect.get_side(UP).get_len() / 2.0,
-                           ellipse_b * res_k, 0,180, 360);
+                           ellipse_b * proport_k, 0,180, 360);
     ellipses[1] = Ellipse(rect.get_side(DOWN).get_center(), rect.get_side(DOWN).get_len() / 2.0,
-                               ellipse_b * res_k, 180,360, 360);
+                               ellipse_b * proport_k, 180,360, 360);
     circles[0] = Ellipse(rect.get_side(LEFT).get_center(), rect.get_side(LEFT).get_len() / 2.0,
                              rect.get_side(LEFT).get_len() / 2.0, 90,270, 360);
     circles[1] = Ellipse(rect.get_side(RIGHT).get_center(), rect.get_side(RIGHT).get_len() / 2.0,
@@ -280,7 +302,7 @@ void Figure::draw(QGraphicsScene *scene, QPen &pen)
 {
     scene->clear();
     QBrush brush_point = QBrush(QBrush(Qt::black, Qt::SolidPattern));
-    figure_center.draw(scene, pen, brush_point, 4);
+    figure_center.draw(scene, pen, brush_point, 4, proport_k);
     rect.draw(scene, pen);
     ellipses[0].draw(scene, pen);
     ellipses[1].draw(scene, pen);
@@ -290,6 +312,8 @@ void Figure::draw(QGraphicsScene *scene, QPen &pen)
 
 void Figure::move(double dx, double dy)
 {
+    dx *= proport_k;
+    dy *= proport_k;
     rect.move(dx, dy);
     ellipses[0].move(dx, dy);
     ellipses[1].move(dx, dy);
@@ -300,6 +324,7 @@ void Figure::move(double dx, double dy)
 
 void Figure::scale(Point center, double kx, double ky)
 {
+    center *= proport_k;
     rect.scale(center, kx, ky);
     ellipses[0].scale(center, kx, ky);
     ellipses[1].scale(center, kx, ky);
@@ -310,6 +335,7 @@ void Figure::scale(Point center, double kx, double ky)
 
 void Figure::rotate(Point center, double degree)
 {
+    center *= proport_k;
     rect.rotate(center, degree);
     ellipses[0].rotate(center, degree);
     ellipses[1].rotate(center, degree);
@@ -320,5 +346,5 @@ void Figure::rotate(Point center, double degree)
 
 Point Figure::get_center()
 {
-    return figure_center;
+    return figure_center / proport_k;
 }

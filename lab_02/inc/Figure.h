@@ -33,7 +33,7 @@ public:
 
     double get_y();
 
-    void draw(QGraphicsScene *scene, QPen &pen, QBrush &brush, int r);
+    void draw(QGraphicsScene *scene, QPen &pen, QBrush &brush, int r, double k = 1);
 
     void move(double dx, double dy);
 
@@ -44,6 +44,12 @@ public:
     bool operator==(const Point &point) const;
 
     bool operator!=(const Point &point) const;
+
+    Point &operator/=(double k);
+
+    Point &operator*=(double k);
+
+    Point operator/(double k);
 };
 
 class Line
@@ -123,6 +129,8 @@ private:
     Ellipse ellipses[2];
     Ellipse circles[2];
     Point figure_center;
+
+    double proport_k;
 
 public:
     Figure();

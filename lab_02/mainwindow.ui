@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1219</width>
-    <height>987</height>
+    <height>1188</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -33,6 +33,11 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="font">
+           <font>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Введите параметры прямоугольника</string>
           </property>
@@ -51,6 +56,11 @@
           </property>
           <item row="0" column="0">
            <widget class="QLabel" name="Label">
+            <property name="font">
+             <font>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
             <property name="text">
              <string>Ширина</string>
             </property>
@@ -62,15 +72,25 @@
           <item row="0" column="1">
            <widget class="QLineEdit" name="RectWidthLineEdit">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>14</pointsize>
+             </font>
             </property>
            </widget>
           </item>
           <item row="1" column="0">
            <widget class="QLabel" name="Label_2">
+            <property name="font">
+             <font>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
             <property name="text">
              <string>Высота</string>
             </property>
@@ -87,6 +107,11 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="font">
+             <font>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
            </widget>
           </item>
          </layout>
@@ -99,8 +124,13 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="font">
+           <font>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
           <property name="text">
-           <string>Введите вторую полуось элипса</string>
+           <string>Введите параметры эллипса</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
@@ -108,17 +138,55 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="ElipsParam">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
+         <layout class="QFormLayout" name="formLayout">
+          <property name="horizontalSpacing">
+           <number>10</number>
           </property>
-         </widget>
+          <property name="verticalSpacing">
+           <number>10</number>
+          </property>
+          <item row="0" column="0">
+           <widget class="QLabel" name="Label111">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>Вертикальная полуось</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="ElipsParam">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item>
          <widget class="QPushButton" name="ParamButton">
+          <property name="font">
+           <font>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Применить</string>
           </property>
@@ -146,6 +214,11 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="font">
+           <font>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Центр преобразования</string>
           </property>
@@ -164,6 +237,11 @@
           </property>
           <item row="0" column="0">
            <widget class="QLabel" name="xLabel">
+            <property name="font">
+             <font>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
             <property name="text">
              <string>x</string>
             </property>
@@ -180,6 +258,11 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="font">
+             <font>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
            </widget>
           </item>
           <item row="1" column="0">
@@ -189,6 +272,11 @@
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>14</pointsize>
+             </font>
             </property>
             <property name="text">
              <string>y</string>
@@ -206,12 +294,22 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="font">
+             <font>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
            </widget>
           </item>
          </layout>
         </item>
         <item>
          <widget class="QPushButton" name="SelectCenterButton">
+          <property name="font">
+           <font>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Взять центр</string>
           </property>
@@ -239,6 +337,11 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="font">
+           <font>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Перенос</string>
           </property>
@@ -257,6 +360,11 @@
           </property>
           <item row="0" column="0">
            <widget class="QLabel" name="dxLabel">
+            <property name="font">
+             <font>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
             <property name="text">
              <string>dx</string>
             </property>
@@ -270,10 +378,20 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="font">
+             <font>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
            </widget>
           </item>
           <item row="1" column="0">
            <widget class="QLabel" name="dyLabel">
+            <property name="font">
+             <font>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
             <property name="text">
              <string>dy</string>
             </property>
@@ -287,12 +405,22 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="font">
+             <font>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
            </widget>
           </item>
          </layout>
         </item>
         <item>
          <widget class="QPushButton" name="MoveButton">
+          <property name="font">
+           <font>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Выполнить перенос</string>
           </property>
@@ -320,6 +448,11 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="font">
+           <font>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Маштабирование</string>
           </property>
@@ -332,6 +465,11 @@
          <layout class="QFormLayout" name="ScaleForm">
           <item row="0" column="0">
            <widget class="QLabel" name="kxLabel">
+            <property name="font">
+             <font>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
             <property name="text">
              <string>kx</string>
             </property>
@@ -345,10 +483,20 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="font">
+             <font>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
            </widget>
           </item>
           <item row="1" column="0">
            <widget class="QLabel" name="kyLabel">
+            <property name="font">
+             <font>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
             <property name="text">
              <string>ky</string>
             </property>
@@ -362,12 +510,22 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="font">
+             <font>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
            </widget>
           </item>
          </layout>
         </item>
         <item>
          <widget class="QPushButton" name="ScaleButton">
+          <property name="font">
+           <font>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Выполнить маштабирование</string>
           </property>
@@ -389,6 +547,11 @@
         </property>
         <item>
          <widget class="QLabel" name="RotateLabel">
+          <property name="font">
+           <font>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Поворот</string>
           </property>
@@ -401,6 +564,11 @@
          <layout class="QFormLayout" name="RotateForm">
           <item row="0" column="0">
            <widget class="QLabel" name="DegreeLabel">
+            <property name="font">
+             <font>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
             <property name="text">
              <string>Угол в градусах</string>
             </property>
@@ -414,12 +582,22 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="font">
+             <font>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
            </widget>
           </item>
          </layout>
         </item>
         <item>
          <widget class="QPushButton" name="RotateButton">
+          <property name="font">
+           <font>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Выполнить поворот</string>
           </property>
@@ -447,6 +625,11 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="font">
+           <font>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Список действий</string>
           </property>
@@ -463,10 +646,20 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="font">
+           <font>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="CancelButton">
+          <property name="font">
+           <font>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Отменить действие</string>
           </property>
@@ -478,6 +671,11 @@
     </item>
     <item row="0" column="0" colspan="3">
      <widget class="QLabel" name="TaskLabel">
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
       <property name="text">
        <string>Нарисовать рисунок, осуществить его перенос, маштабирование, поворот.</string>
       </property>
