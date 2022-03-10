@@ -44,6 +44,7 @@ private:
     QPen main_pen;
     QGraphicsScene *main_scene;
     vector <DiffTypePair<Figure, QString>> action_vec;
+    bool has_figure;
 
     Point get_transform_center();
     void set_default_params();

@@ -35,4 +35,12 @@ private:
 public:
     FigureError(QString message);
 };
+
+class Chill : public Error
+{
+
+public:
+    Chill(QString message);
+};
+
 #endif

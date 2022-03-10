@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-//todo протестировать
 double checked_read(QLineEdit *lineEdit1);
 
 Pair<double> checked_pair_read(QLineEdit *lineEdit1, QLineEdit *lineEdit2);
@@ -12,8 +11,9 @@ MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    main_pen = QPen(Qt::black, 1, Qt::SolidLine, Qt::FlatCap);
+    main_pen = QPen(Qt::black, 2, Qt::SolidLine, Qt::FlatCap);
     set_default_params();
+    has_figure = false;
 }
 
 MainWindow::~MainWindow()
@@ -37,6 +37,7 @@ void MainWindow::on_ParamButton_clicked()
         create_figure();
         figure.draw(main_scene, main_pen);
         clean_actions();
+        has_figure = true;
     }
     catch (InputError &e)
     {
@@ -50,15 +51,26 @@ void MainWindow::on_ParamButton_clicked()
 
 void MainWindow::on_SelectCenterButton_clicked()
 {
-    Point cur_center = figure.get_center();
-    ui->xLineEdit->setText(QString::number(cur_center.get_x()));
-    ui->yLineEdit->setText(QString::number(cur_center.get_y()));
+    try
+    {
+        if (!has_figure)
+            throw FigureError("");
+        Point cur_center = figure.get_center();
+        ui->xLineEdit->setText(QString::number(cur_center.get_x()));
+        ui->yLineEdit->setText(QString::number(cur_center.get_y()));
+    }
+    catch (FigureError &e)
+    {
+        show_error("Ошибка данных", "Фигура не создана. Необходимо задать её параметры");
+    }
 }
 
 void MainWindow::on_MoveButton_clicked()
 {
     try
     {
+        if(!has_figure)
+            throw FigureError("");
         Pair<double> val;
         val = checked_pair_read(ui->dxLineEdit, ui->dyLineEdit);
         double dx = val.get_first(), dy = val.get_second();
@@ -71,6 +83,14 @@ void MainWindow::on_MoveButton_clicked()
     {
         show_error("Ошибка ввода", "Исправьте поля выделенные красным. Программа ожидает на вход вещественные числа.");
     }
+    catch (FigureError &e)
+    {
+        show_error("Ошибка данных", "Фигура не создана. Необходимо задать её параметры");
+    }
+    catch (Chill &e)
+    {
+        return;
+    }
 }
 
 
@@ -78,6 +98,8 @@ void MainWindow::on_ScaleButton_clicked()
 {
     try
     {
+        if(!has_figure)
+            throw FigureError("");
         Pair<double> val;
         val = checked_pair_read(ui->kxLineEdit, ui->kyLineEdit);
         double kx = val.get_first(), ky = val.get_second();
@@ -85,11 +107,19 @@ void MainWindow::on_ScaleButton_clicked()
         Figure figure_copy = figure;
         figure.scale(center, kx, ky);
         figure.draw(ui->ResView->scene(), main_pen);
-        push_action({figure_copy, QString("Маштабирование в (%1, %2) раза").arg(kx).arg(ky)});
+        push_action({figure_copy, QString("Маштабирование в (%1; %2) раза").arg(kx).arg(ky)});
     }
     catch (InputError &e)
     {
         show_error("Ошибка ввода", "Исправьте поля выделенные красным. Программа ожидает на вход вещественные числа.");
+    }
+    catch (FigureError &e)
+    {
+        show_error("Ошибка данных", "Фигура не создана. Необходимо задать её параметры");
+    }
+    catch (Chill &e)
+    {
+        return;
     }
 }
 
@@ -98,6 +128,8 @@ void MainWindow::on_RotateButton_clicked()
 {
     try
     {
+        if(!has_figure)
+            throw FigureError("");
         double degree = checked_read(ui->DegreeLineEdit);
         Point center = this->get_transform_center();
         Figure figure_copy = figure;
@@ -108,6 +140,14 @@ void MainWindow::on_RotateButton_clicked()
     catch (InputError &e)
     {
         show_error("Ошибка ввода", "Исправьте поля выделенные красным. Программа ожидает на вход вещественные числа.");
+    }
+    catch (FigureError &e)
+    {
+        show_error("Ошибка данных", "Фигура не создана. Необходимо задать её параметры");
+    }
+    catch (Chill &e)
+    {
+        return;
     }
 }
 

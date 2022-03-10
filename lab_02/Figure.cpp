@@ -1,5 +1,7 @@
 #include "Figure.h"
 
+#define EPS 1e-4
+
 double DegreeToRadians(double degree)
 {
     return degree * (M_PI / 180.0);
@@ -271,16 +273,16 @@ Figure::Figure()
 Figure::Figure(double width, double height, double ellipse_b, QGraphicsScene *scene)
 {
     double k = 4;
-    if (width < 0)
+    if (width <= 0)
         throw FigureError("Ширина прямоугольника должна быть больше нуля");
-    if (height < 0)
+    if (height <= 0)
         throw FigureError("Высота прямоугольника должна быть больше нуля");
-    if (ellipse_b < 0)
+    if (ellipse_b <= 0)
         throw FigureError("Полуось эллипса должна быть больше нуля");
     double sc_width = scene->width(), sc_height = scene->height();
     Point center(sc_width / 2.0, sc_height / 2.0);
     figure_center = center;
-    double k_w = sc_width / (width * k), k_h = sc_height / (height * k);
+    double k_w = sc_width / ((width + height / 2) * k), k_h = sc_height / ((height + ellipse_b) * k);
     proport_k = (k_w < k_h) ? k_w : k_h;
     width /= 2.0;
     height /= 2.0;
@@ -312,6 +314,8 @@ void Figure::draw(QGraphicsScene *scene, QPen &pen)
 
 void Figure::move(double dx, double dy)
 {
+    if(dx < 0.5 || dy < 0.5)
+        throw Chill("");
     dx *= proport_k;
     dy *= proport_k;
     rect.move(dx, dy);
@@ -324,6 +328,8 @@ void Figure::move(double dx, double dy)
 
 void Figure::scale(Point center, double kx, double ky)
 {
+    if(fabs(kx) < EPS || fabs(ky) < EPS)
+        throw Chill("");
     center *= proport_k;
     rect.scale(center, kx, ky);
     ellipses[0].scale(center, kx, ky);
@@ -335,6 +341,8 @@ void Figure::scale(Point center, double kx, double ky)
 
 void Figure::rotate(Point center, double degree)
 {
+    if(fabs(degree) < EPS)
+        throw Chill("");
     center *= proport_k;
     rect.rotate(center, degree);
     ellipses[0].rotate(center, degree);

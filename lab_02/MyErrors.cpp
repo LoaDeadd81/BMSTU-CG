@@ -24,3 +24,8 @@ FigureError::FigureError(QString message) : Error(message)
 {
 
 }
+
+Chill::Chill(QString message) : Error(message)
+{
+
+}
