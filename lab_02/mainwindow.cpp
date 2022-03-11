@@ -102,7 +102,7 @@ void MainWindow::on_ScaleButton_clicked()
             throw FigureError("");
         Pair<double> val;
         val = checked_pair_read(ui->kxLineEdit, ui->kyLineEdit);
-        double kx = val.get_first(), ky = val.get_second();
+         double kx = val.get_first(), ky = val.get_second();
         Point center = this->get_transform_center();
         Figure figure_copy = figure;
         figure.scale(center, kx, ky);
@@ -130,7 +130,7 @@ void MainWindow::on_RotateButton_clicked()
     {
         if(!has_figure)
             throw FigureError("");
-        double degree = checked_read(ui->DegreeLineEdit);
+         double degree = checked_read(ui->DegreeLineEdit);
         Point center = this->get_transform_center();
         Figure figure_copy = figure;
         figure.rotate(center, degree);
@@ -194,7 +194,7 @@ double checked_read(QLineEdit *lineEdit1)
 {
     bool e1 = true;
     lineEdit1->setStyleSheet("");
-    double x = lineEdit1->text().toDouble(&e1);
+     double x = lineEdit1->text().toDouble(&e1);
     if (!e1)
     {
         lineEdit1->setStyleSheet("border: 1px solid red");
@@ -208,7 +208,7 @@ Pair<double> checked_pair_read(QLineEdit *lineEdit1, QLineEdit *lineEdit2)
     bool e1 = true, e2 = true;
     lineEdit1->setStyleSheet("");
     lineEdit2->setStyleSheet("");
-    double x = lineEdit1->text().toDouble(&e1), y = lineEdit2->text().toDouble(&e2);
+     double x = lineEdit1->text().toDouble(&e1), y = lineEdit2->text().toDouble(&e2);
     if (!e1 || !e2)
     {
         if (!e1)

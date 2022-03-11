@@ -11,6 +11,8 @@
 #include "MyErrors.h"
 #include "Pair.h"
 
+using namespace std;
+
 typedef DiffTypePair<Figure, QString> action_type;
 
 QT_BEGIN_NAMESPACE

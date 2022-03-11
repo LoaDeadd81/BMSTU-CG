@@ -27,7 +27,11 @@ add_executable(lab_02
         inc/MyErrors.h
         Pair.cpp
         inc/Pair.h
-        )
+        Point.cpp
+        Line.cpp
+        Rectangle.cpp
+        Ellipse.cpp
+        Circle.cpp inc/Primitives.h inc/GeometricFigures.h)
 
 target_link_libraries(lab_02
         Qt::Core

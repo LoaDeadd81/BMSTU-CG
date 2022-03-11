@@ -23,7 +23,7 @@ void MainWindow::on_AddPushButton_clicked()
     auto *x_line = ui->xLineEdit, *y_line = ui->yLineEdit;
     x_line->setStyleSheet("border: 1px solid black");
     y_line->setStyleSheet("border: 1px solid black");
-    double xd = x_line->text().toDouble(&e1), yd = y_line->text().toDouble(&e2);
+    double xd = x_line->text().todouble(&e1), yd = y_line->text().todouble(&e2);
     if(!e1 || !e2)
     {
         if(!e1)
@@ -105,7 +105,7 @@ void MainWindow::DelButton()
 void MainWindow::on_PointTableWidget_itemChanged(QTableWidgetItem *item)
 {
     bool e = true;
-    double a = item->text().toDouble(&e);
+    double a = item->text().todouble(&e);
     int row = item->row(), column = item->column();
     Point &p = points[row];
     if(!e)
