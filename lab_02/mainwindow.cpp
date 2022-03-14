@@ -177,9 +177,10 @@ void MainWindow::set_default_params()
 
 void MainWindow::create_scene()
 {
-    QRect rect = ui->ResView->geometry();
-    main_scene = new QGraphicsScene(0, 0, rect.width(), rect.height(), this);
+    main_scene = new QGraphicsScene(this);
     ui->ResView->setScene(main_scene);
+    ui->ResView->setAlignment(Qt::AlignCenter);
+    main_scene->setSceneRect(0, 0, 1, 1);
 }
 
 void MainWindow::create_figure()
@@ -187,7 +188,7 @@ void MainWindow::create_figure()
     Pair<double> size;
     size = checked_pair_read(ui->RectWidthLineEdit, ui->RectHeightLineEdit);
     double ellipse_a = checked_read(ui->ElipsParam);
-    figure = Figure(size.get_first(), size.get_second(), ellipse_a, main_scene);
+    figure = Figure(size.get_first(), size.get_second(), ellipse_a, ui->ResView->geometry());
 }
 
 double checked_read(QLineEdit *lineEdit1)

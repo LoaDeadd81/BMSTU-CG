@@ -18,7 +18,7 @@ private:
 public:
     Figure();
 
-    Figure(double width, double height, double ellipse_b, QGraphicsScene *scene);
+    Figure(double width, double height, double ellipse_b, const QRect &rect1);
 
     void draw(QGraphicsScene *scene, QPen &pen);
 
