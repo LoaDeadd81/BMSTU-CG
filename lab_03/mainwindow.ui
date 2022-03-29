@@ -589,7 +589,7 @@
              </font>
             </property>
             <property name="text">
-             <string/>
+             <string>750</string>
             </property>
             <property name="placeholderText">
              <string>Координата X</string>
@@ -610,7 +610,7 @@
              </font>
             </property>
             <property name="text">
-             <string/>
+             <string>400</string>
             </property>
             <property name="placeholderText">
              <string>Координата Y</string>
