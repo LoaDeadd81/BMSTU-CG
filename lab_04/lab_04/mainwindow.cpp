@@ -39,9 +39,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::set_spectr_center()
 {
-    int cx = ui->ResView->size().width() / 2, cy = ui->ResView->size().height() / 2;
-    ui->xcCircleLE->setText(QString::number(cx));
-    ui->ycCircleLE->setText(QString::number(cy));
+//    int cx = ui->ResView->size().width(), cy = ui->ResView->size().height()/2;
+    ui->xcCircleLE->setText(QString::number(800));
+    ui->ycCircleLE->setText(QString::number(500));
 }
 
 void MainWindow::on_ButtonBlackLine_clicked()

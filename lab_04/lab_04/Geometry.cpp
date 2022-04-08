@@ -14,11 +14,11 @@ void rotate(Point_t &p, Point_t &center, double rad)
 
 void scale(Circle &circle, double k)
 {
-    circle.r *= k;
+    circle.r = int(circle.r * k);
 }
 
 void scale(Ellipse &ellipse, double k)
 {
-    ellipse.a *= k;
-    ellipse.b *= k;
+    ellipse.a = int(ellipse.a * k);
+    ellipse.b = int(ellipse.b * k);
 }

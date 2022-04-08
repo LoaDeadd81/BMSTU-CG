@@ -3,7 +3,7 @@
 
 #include <cmath>
 
-#define EPS 1e-3
+#define EPS 1e-2
 
 typedef struct Point_t
 {
