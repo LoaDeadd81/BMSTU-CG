@@ -3,31 +3,35 @@
 
 #include <cmath>
 
-#define EPS 1e-2
+#define EPS 1e-3
+
+typedef struct Circle Circle_t;
+
+typedef struct Ellipse Ellipse_t;
 
 typedef struct Point_t
 {
-    double x, y;
+    int x, y;
 } Point_t;
 
-typedef struct Circle
+struct Circle
 {
     Point_t center;
-    double r;
-} Circle;
+    int r;
+};
 
-typedef struct Ellipse
+struct Ellipse
 {
     Point_t center;
-    double a, b;
-} Ellipse;
+    int a, b;
+};
 
 bool eq(Point_t &a, Point_t &b);
 
 void rotate(Point_t &p, Point_t &center, double rad);
 
-void scale(Circle &circle, double k);
+void scale(Circle_t &circle, double k);
 
-void scale(Ellipse &ellipse, double k);
+void scale(Ellipse_t &ellipse, double k);
 
 #endif 

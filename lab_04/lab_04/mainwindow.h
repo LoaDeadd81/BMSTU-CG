@@ -3,15 +3,23 @@
 
 #include <QMainWindow>
 #include <QErrorMessage>
+#include <ctime>
+#include <QtCharts>
+#include <QLineSeries>
+
+#include <iostream>
+
+using namespace std;
 
 #include "Geometry.h"
 #include "Graphics.h"
 #include "Algo.h"
 #include "Errors.h"
+#include "form.h"
 
-typedef void (*algorithm_circle)(Circle &, Graph_t &);
+typedef void (*algorithm_circle)(Circle_t &, Graph_t &);
 
-typedef void (*algorithm_ellipse)(Ellipse &, Graph_t &);
+typedef void (*algorithm_ellipse)(Ellipse_t &, Graph_t &);
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -75,6 +83,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    form *Graphics;
 
     Graph_t graph;
     QColor bg_color;
@@ -95,9 +104,9 @@ private:
 
     algorithm_ellipse get_ellipse_alg();
 
-    Ellipse get_ellipse_param();
+    Ellipse_t get_ellipse_param();
 
-    Circle get_circle_param();
+    Circle_t get_circle_param();
 
     Point_t get_center();
 };

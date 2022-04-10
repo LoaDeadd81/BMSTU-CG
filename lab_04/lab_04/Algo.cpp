@@ -12,20 +12,18 @@ void diagonal_step_circle(int &x, int &y, int &delta);
 
 void vertical_step_circle(int &x, int &y, int &delta);
 
-void horizontal_step_ellipse(int &x, int &y, double &delta, double alpha);
+void horizontal_step_ellipse(int &x, int &y, int &delta, int sqr_a, int sqr_b);
 
-void diagonal_step_ellipse(int &x, int &y, double &delta, double alpha);
+void diagonal_step_ellipse(int &x, int &y, int &delta, int sqr_a, int sqr_b);
 
-void vertical_step_ellipse(int &x, int &y, double &delta, double alpha);
+void vertical_step_ellipse(int &x, int &y, int &delta, int sqr_a, int sqr_b);
 
-void draw_point(double x, double y, Graph_t &graph)
+void draw_point(int x, int y, Graph_t &graph)
 {
-    x = round(x);
-    y = round(y);
     graph.scene->addLine(x, y, x, y, graph.pen);
 }
 
-void draw_ellipse_point_sym(Point_t center, double x, double y, Graph_t &graph)
+void draw_ellipse_point_sym(Point_t center, int x, int y, Graph_t &graph)
 {
     draw_point(center.x + x, center.y + y, graph);
     draw_point(center.x + x, center.y - y, graph);
@@ -33,7 +31,7 @@ void draw_ellipse_point_sym(Point_t center, double x, double y, Graph_t &graph)
     draw_point(center.x - x, center.y + y, graph);
 }
 
-void draw_circle_point_sym(Point_t center, double x, double y, Graph_t &graph)
+void draw_circle_point_sym(Point_t center, int x, int y, Graph_t &graph)
 {
     draw_point(center.x + x, center.y + y, graph);
     draw_point(center.x + x, center.y - y, graph);
@@ -46,78 +44,75 @@ void draw_circle_point_sym(Point_t center, double x, double y, Graph_t &graph)
     draw_point(center.x - y, center.y + x, graph);
 }
 
-void ellipse_param_draw(Ellipse &ellipse, Graph_t &graph)
+void ellipse_param_draw(Ellipse_t &ellipse, Graph_t &graph)
 {
     bool draw_access = graph.scene != nullptr;
-    double d_fi = (ellipse.a >= ellipse.b) ? 1 / ellipse.a : 1 / ellipse.b;
+    double d_fi = (ellipse.a >= ellipse.b) ? 1.0 / ellipse.a : 1.0 / ellipse.b;
     double end = rad(90);
     for (double i = 0; i <= end; i += d_fi)
     {
-        double x = ellipse.a * cos(i),
-                y = ellipse.b * sin(i);
+        int x = round(ellipse.a * cos(i)),
+                y = round(ellipse.b * sin(i));
         if (draw_access) draw_ellipse_point_sym(ellipse.center, x, y, graph);
     }
 }
 
-void ellipse_canon_draw(Ellipse &ellipse, Graph_t &graph)
+void ellipse_canon_draw(Ellipse_t &ellipse, Graph_t &graph)
 {
     bool draw_access = graph.scene != nullptr;
     double a_sqr = ellipse.a * ellipse.a, b_sqr = ellipse.b * ellipse.b,
             coeff1 = b_sqr / a_sqr, coeff2 = a_sqr / b_sqr;
-    double border_x = a_sqr / sqrt(a_sqr + b_sqr),
-            border_y = b_sqr / sqrt(a_sqr + b_sqr);
+    double border_x = a_sqr / sqrtl(a_sqr + b_sqr),
+            border_y = b_sqr / sqrtl(a_sqr + b_sqr);
 
     for (int i = 0; i <= border_x; i++)
     {
-        double x = i, y = sqrt(b_sqr - coeff1 * x * x);
+        int x = i, y = round(sqrtl(b_sqr - coeff1 * x * x));
         if (draw_access)draw_ellipse_point_sym(ellipse.center, x, y, graph);
     }
     for (int i = 0; i <= border_y; i++)
     {
-        double y = i, x = sqrt(a_sqr - coeff2 * y * y);
+        int y = i, x = round(sqrtl(a_sqr - coeff2 * y * y));
         if (draw_access)draw_ellipse_point_sym(ellipse.center, x, y, graph);
     }
 }
 
-void ellipse_bres_draw(Ellipse &ellipse, Graph_t &graph)
+void ellipse_bres_draw(Ellipse_t &ellipse, Graph_t &graph)
 {
     bool draw_access = graph.scene != nullptr;
     int x = 0, y = ellipse.b;
-    double delta = 2.0 * (1 - ellipse.b);
-    double alpha = (1 - (ellipse.b * ellipse.b) / (ellipse.a * ellipse.a));
+    int sqr_a = ellipse.a * ellipse.a, sqr_b = ellipse.b * ellipse.b;
+    int delta = sqr_b + (1 - 2 * ellipse.b) * sqr_a;
     while (y >= 0)
     {
         if (draw_access) draw_ellipse_point_sym(ellipse.center, x, y, graph);
-        if (fabs(delta) <= EPS) diagonal_step_ellipse(x, y, delta, alpha);
+        if (delta == 0) diagonal_step_ellipse(x, y, delta, sqr_a, sqr_b);
         else if (delta < 0)
         {
-            double sigma = 2.0 * (delta + y) - 1.0;
-            if (sigma <= 0) horizontal_step_ellipse(x, y, delta, alpha);
-            else diagonal_step_ellipse(x, y, delta, alpha);
+            long long sigma = 2 * delta + (2 * y - 1) * sqr_a;
+            if (sigma <= 0) horizontal_step_ellipse(x, y, delta, sqr_a, sqr_b);
+            else diagonal_step_ellipse(x, y, delta, sqr_a, sqr_b);
         }
         else if (delta > 0)
         {
-            double sigma = 2.0 * delta + (2.0 * x + 1.0) * (alpha - 1.0);
-            if (sigma <= 0) diagonal_step_ellipse(x, y, delta, alpha);
-            else vertical_step_ellipse(x, y, delta, alpha);
+            long long sigma = 2 * delta + (-2 * x - 1) * sqr_b;
+            if (sigma <= 0) diagonal_step_ellipse(x, y, delta, sqr_a, sqr_b);
+            else vertical_step_ellipse(x, y, delta, sqr_a, sqr_b);
         }
     }
 }
 
-void ellipse_mid_point_draw(Ellipse &ellipse, Graph_t &graph)
+void ellipse_mid_point_draw(Ellipse_t &ellipse, Graph_t &graph)
 {
+    bool draw_access = graph.scene != nullptr;
     double a_sqr = ellipse.a * ellipse.a, b_sqr = ellipse.b * ellipse.b,
             border = a_sqr / sqrt(a_sqr + b_sqr);
-    int aa = 2 * a_sqr;
-    int bb = 2 * b_sqr;
+    int aa = 2 * a_sqr, bb = 2 * b_sqr, delta = -aa * ellipse.b;
     int x = 0, y = ellipse.b;
-    int df = 0;
-    int f = round(b_sqr - a_sqr * y + 0.25 * a_sqr + 0.5);
-
-    int delta = -aa * y;
+    double df = 0, f = b_sqr - a_sqr * y + 0.25 * a_sqr + 0.5;
     for (x = 0; x <= border; x++)
     {
-        draw_ellipse_point_sym(ellipse.center, x, y, graph);
+        if (draw_access) draw_ellipse_point_sym(ellipse.center, x, y, graph);
         if (f >= 0)
         {
             y -= 1;
@@ -127,12 +122,13 @@ void ellipse_mid_point_draw(Ellipse &ellipse, Graph_t &graph)
         df += bb;
         f += df + b_sqr;
     }
+
     delta = bb * x;
-    f += (int) (-b_sqr * (x + 0.75) - a_sqr * (y - 0.75));
+    f += -b_sqr * (x + 0.75) - a_sqr * (y - 0.75);
     df = -aa * y;
     for (; y >= 0; y--)
     {
-        draw_ellipse_point_sym(ellipse.center, x, y, graph);
+        if (draw_access) draw_ellipse_point_sym(ellipse.center, x, y, graph);
         if (f < 0)
         {
             x += 1;
@@ -144,38 +140,38 @@ void ellipse_mid_point_draw(Ellipse &ellipse, Graph_t &graph)
     }
 }
 
-void ellipse_lib_draw(Ellipse &ellipse, Graph_t &graph)
+void ellipse_lib_draw(Ellipse_t &ellipse, Graph_t &graph)
 {
     double x = ellipse.center.x - ellipse.a,
             y = ellipse.center.y - ellipse.b;
     graph.scene->addEllipse(x, y, ellipse.a * 2, ellipse.b * 2, graph.pen);
 }
 
-void circle_param_draw(Circle &circle, Graph_t &graph)
+void circle_param_draw(Circle_t &circle, Graph_t &graph)
 {
     bool draw_access = graph.scene != nullptr;
-    double d_fi = 1 / circle.r;
+    double d_fi = 1.0 / circle.r;
     double end = rad(45);
     for (double i = 0; i <= end; i += d_fi)
     {
-        double x = circle.r * cos(i),
-                y = circle.r * sin(i);
+        int x = round(circle.r * cos(i)),
+                y = round(circle.r * sin(i));
         if (draw_access) draw_circle_point_sym(circle.center, x, y, graph);
     }
 }
 
-void circle_canon_draw(Circle &circle, Graph_t &graph)
+void circle_canon_draw(Circle_t &circle, Graph_t &graph)
 {
     bool draw_access = graph.scene != nullptr;
     double r_sqr = circle.r * circle.r;
     for (int i = 0; i <= circle.r / sqrt(2); i++)
     {
-        double x = i, y = sqrt(r_sqr - x * x);
+        int x = i, y = round(sqrt(r_sqr - x * x));
         if (draw_access) draw_circle_point_sym(circle.center, x, y, graph);
     }
 }
 
-void circle_bres_draw(Circle &circle, Graph_t &graph)
+void circle_bres_draw(Circle_t &circle, Graph_t &graph)
 {
     bool draw_access = graph.scene != nullptr;
     double border = circle.r / sqrt(2);
@@ -200,28 +196,26 @@ void circle_bres_draw(Circle &circle, Graph_t &graph)
 
 }
 
-void circle_mid_point_draw(Circle &circle, Graph_t &graph)
+void circle_mid_point_draw(Circle_t &circle, Graph_t &graph)
 {
-    int x = 0;
-    int y = circle.r;
-    int p = 5.0 / 4.0 - circle.r;
+    bool draw_access = graph.scene != nullptr;
+    int x = 0, y = circle.r;
+    double f = 5.0 / 4.0 - circle.r;
     while (x <= y)
     {
-        draw_circle_point_sym(circle.center, x, y, graph);
+        if (draw_access)draw_circle_point_sym(circle.center, x, y, graph);
         x++;
-        if (p < 0)
-        {
-            p += 2 * x + 1;
-        }
+        if (f < 0)
+            f += 2 * x + 1;
         else
         {
             y--;
-            p += 2 * (x - y) + 1;
+            f += 2 * (x - y) + 1;
         }
     }
 }
 
-void circle_lib_draw(Circle &circle, Graph_t &graph)
+void circle_lib_draw(Circle_t &circle, Graph_t &graph)
 {
     double x = circle.center.x - circle.r,
             y = circle.center.y - circle.r;
@@ -247,21 +241,21 @@ void vertical_step_circle(int &x, int &y, int &delta)
     delta += -2 * y + 1;
 }
 
-void horizontal_step_ellipse(int &x, int &y, double &delta, double alpha)
+void horizontal_step_ellipse(int &x, int &y, int &delta, int sqr_a, int sqr_b)
 {
     x++;
-    delta += (2.0 * x + 1.0) * (1.0 - alpha);
+    delta += (2 * x + 1) * sqr_b;
 }
 
-void diagonal_step_ellipse(int &x, int &y, double &delta, double alpha)
+void diagonal_step_ellipse(int &x, int &y, int &delta, int sqr_a, int sqr_b)
 {
     x++;
     y--;
-    delta += (2.0 * x + 1.0) * (1.0 - alpha) - 2.0 * y + 1.0;
+    delta += (2 * x + 1) * sqr_b + (-2 * y + 1) * sqr_a;
 }
 
-void vertical_step_ellipse(int &x, int &y, double &delta, double alpha)
+void vertical_step_ellipse(int &x, int &y, int &delta, int sqr_a, int sqr_b)
 {
     y--;
-    delta += -2 * y + 1;
+    delta += (-2 * y + 1) * sqr_a;
 }

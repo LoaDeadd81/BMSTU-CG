@@ -547,7 +547,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Парам</string>
+           <string>Параметрическое ур-е</string>
           </property>
          </widget>
         </item>
@@ -565,7 +565,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Канон</string>
+           <string>Каноническое ур-е</string>
           </property>
           <property name="checkable">
            <bool>true</bool>
@@ -589,7 +589,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Брезенхем</string>
+           <string>Метод Брезенхейма</string>
           </property>
          </widget>
         </item>
@@ -607,7 +607,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Средня точка</string>
+           <string>Метод средней точки</string>
           </property>
          </widget>
         </item>
@@ -625,7 +625,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Библиотечный алгоритм</string>
+           <string>Библиотечная функция</string>
           </property>
          </widget>
         </item>
@@ -701,7 +701,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Шага (коэффицент маштабирования)</string>
+           <string>Шаг (коэффицент маштабирования)</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
@@ -780,19 +780,6 @@
           </property>
           <property name="text">
            <string>Построить спектр</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="Line" name="line_7">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
           </property>
          </widget>
         </item>
