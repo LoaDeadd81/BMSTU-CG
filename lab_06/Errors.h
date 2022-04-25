@@ -4,6 +4,7 @@
 #include <exception>
 #include <QString>
 
+
 class Error : public std::exception
 {
 private:
@@ -17,6 +18,12 @@ class UIError : public Error
 {
 public:
     UIError(QString message);
+};
+
+class Todo : public Error
+{
+public:
+    Todo(QString message);
 };
 
 #endif 

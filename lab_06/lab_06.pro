@@ -1,4 +1,4 @@
-QT       += core gui charts
+QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -9,23 +9,17 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    Algo.cpp \
     Errors.cpp \
-    Point.cpp \
-    form.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
-    Algo.h \
+    Edge.h \
     Errors.h \
     Graphics.h \
-    Point.h \
-    form.h \
     mainwindow.h
 
 FORMS += \
-    form.ui \
     mainwindow.ui
 
 # Default rules for deployment.
@@ -34,4 +28,4 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES += \
-    lab_03.pro.user
+    lab_06.pro.user

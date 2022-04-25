@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(lab_03)
+project(lab_06)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_AUTOMOC ON)
@@ -12,27 +12,19 @@ find_package(Qt6 COMPONENTS
         Core
         Gui
         Widgets
-        REQUIRED
-        Charts)
+        REQUIRED)
 
-add_executable(lab_03
+add_executable(lab_06
+        Errors.h
+        Errors.cpp
+        Graphics.h
         main.cpp
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
-        Algo.cpp
-        Algo.h
-        Point.h
-        Graphics.h
-        Errors.cpp
-        Errors.h
-        Point.cpp
-        form.cpp
-        form.h
-        form.ui
         )
 
-target_link_libraries(lab_03
+target_link_libraries(lab_06
         Qt::Core
         Qt::Gui
         Qt::Widgets
