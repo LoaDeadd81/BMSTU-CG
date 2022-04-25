@@ -2,21 +2,24 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QGraphicsScene>
-#include <QPen>
-#include <QColor>
+#include <QErrorMessage>
+#include <ctime>
+#include <QtCharts>
+#include <QLineSeries>
 
-#include "Point.h"
+#include <iostream>
+
+using namespace std;
+
+#include "Geometry.h"
 #include "Graphics.h"
 #include "Algo.h"
 #include "Errors.h"
-
-#include <QtCharts>
-
 #include "form.h"
 
+typedef void (*algorithm_circle)(Circle_t &, Graph_t &);
 
-typedef void (*algorithm)(Point_t &, Point_t &, Graph_t &, int &);
+typedef void (*algorithm_ellipse)(Ellipse_t &, Graph_t &);
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -33,6 +36,8 @@ public:
     MainWindow(QWidget *parent = nullptr);
 
     ~MainWindow();
+
+    void set_spectr_center();
 
 private slots:
 
@@ -68,34 +73,42 @@ private slots:
 
     void on_ButtonGreenBG_clicked();
 
-    void on_pushButton_clicked();
+    void on_CleanButton_clicked();
 
-    void on_pushButton_2_clicked();
+    void on_DrawButton_clicked();
 
-    void on_DrawSpectre_clicked();
+    void on_DrawSpectreButton_clicked();
 
-    void on_pushButton_3_clicked();
-
-    void on_pushButton_4_clicked();
+    void on_TimeAnalButton_clicked();
 
 private:
     Ui::MainWindow *ui;
-    Form *secDialog;
+    form *Graphics;
 
     Graph_t graph;
     QColor bg_color;
 
-    algorithm get_algorithm();
+    void draw_circle();
 
-    Point_t get_start();
+    void draw_ellipse();
 
-    Point_t get_end();
+    void draw_circle_specter();
 
-    Point_t get_spec_center();
+    void draw_ellipse_specter();
 
-    double get_spec_len();
+    void circle_time_mes();
 
-    double get_spec_degree();
+    void ellipse_time_mes();
+
+    algorithm_circle get_circle_alg();
+
+    algorithm_ellipse get_ellipse_alg();
+
+    Ellipse_t get_ellipse_param();
+
+    Circle_t get_circle_param();
+
+    Point_t get_center();
 };
 
 #endif // MAINWINDOW_H

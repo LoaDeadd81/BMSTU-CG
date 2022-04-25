@@ -1,14 +1,14 @@
 #include "form.h"
 #include "ui_form.h"
 
-Form::Form(QWidget *parent) :
+form::form(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::Form)
+    ui(new Ui::form)
 {
     ui->setupUi(this);
 }
 
-Form::~Form()
+form::~form()
 {
     delete ui;
 }

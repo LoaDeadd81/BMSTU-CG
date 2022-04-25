@@ -1,9 +1,6 @@
 <ui version="4.0">
- <author/>
- <comment/>
- <exportmacro/>
- <class>Form</class>
- <widget name="Form" class="QWidget">
+ <class>form</class>
+ <widget class="QDialog" name="form">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -13,9 +10,9 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Dialog</string>
   </property>
  </widget>
- <pixmapfunction/>
+ <resources/>
  <connections/>
 </ui>

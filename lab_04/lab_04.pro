@@ -11,7 +11,7 @@ CONFIG += c++11
 SOURCES += \
     Algo.cpp \
     Errors.cpp \
-    Point.cpp \
+    Geometry.cpp \
     form.cpp \
     main.cpp \
     mainwindow.cpp
@@ -19,8 +19,8 @@ SOURCES += \
 HEADERS += \
     Algo.h \
     Errors.h \
+    Geometry.h \
     Graphics.h \
-    Point.h \
     form.h \
     mainwindow.h
 
@@ -34,4 +34,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES += \
-    lab_03.pro.user
+    CMakeLists.txt \
+    lab_04.pro.user

@@ -4,19 +4,19 @@
 #include <QDialog>
 
 namespace Ui {
-class Form;
+class form;
 }
 
-class Form : public QDialog
+class form : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit Form(QWidget *parent = nullptr);
-    ~Form();
+    explicit form(QWidget *parent = nullptr);
+    ~form();
 
 private:
-    Ui::Form *ui;
+    Ui::form *ui;
 };
 
 #endif // FORM_H
