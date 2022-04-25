@@ -7,7 +7,8 @@
 typedef struct Graph_t
 {
     QGraphicsScene *scene;
-    QPen pen;
+    QPen pen_fill;
+    QPen pen_border;
 }Graph_t;
 
 #endif 

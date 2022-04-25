@@ -14,3 +14,8 @@ UIError::UIError(QString message) : Error(message)
 {
 
 }
+
+Todo::Todo(QString message) : Error(message)
+{
+
+}
