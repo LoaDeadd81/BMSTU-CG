@@ -120,6 +120,9 @@ private:
     void disable_clipper_input();
     void enable_clipper_input();
 
+    void clipping();
+    void draw_cut_off_line(QLine &line);
+
 };
 
 #endif

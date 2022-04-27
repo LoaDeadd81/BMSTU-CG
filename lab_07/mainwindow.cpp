@@ -59,8 +59,9 @@ void MainWindow::on_DrawButton_clicked()
 {
     try
     {
-        //todo наличие отрезков
-
+        if(!clipper_exist) throw UIError("Введите отсекатель");
+        if(lines_list.empty()) throw UIError("Введите хоть один отрезок");
+        clipping();
     }
     catch (Error &e)
     {
@@ -91,14 +92,28 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 
 void MainWindow::on_DrawClipperButton_clicked()
 {
-    cur_line = read_line();
-    draw_line();
+    try
+    {
+        clipper = read_clipper();
+        draw_clipper();
+    }
+    catch (Error &e)
+    {
+        show_error("Ошибка", e.get_message());
+    }
 }
 
 void MainWindow::on_DrawSegmentButton_clicked()
 {
-    clipper = read_clipper();
-    draw_clipper();
+    try
+    {
+        cur_line = read_line();
+        draw_line();
+    }
+    catch (Error &e)
+    {
+        show_error("Ошибка", e.get_message());
+    }
 }
 
 void MainWindow::add_dot_to_line(QPoint &point)
@@ -110,16 +125,32 @@ void MainWindow::add_dot_to_line(QPoint &point)
 
 void MainWindow::add_dot_to_clipper(QPoint &point)
 {
-    if (clipper_exist) throw UIError("Отсекатель уже введён");
-    if (corner_count == 0) clipper.setTopLeft(point);
-    else clipper.setBottomRight(point);
-    corner_count++;
+    try
+    {
+        if (clipper_exist) throw UIError("Отсекатель уже введён");
+        if (corner_count == 0) clipper.setTopLeft(point);
+        else clipper.setBottomRight(point);
+        corner_count++;
+    }
+    catch (Error &e)
+    {
+        show_error("Ошибка", e.get_message());
+    }
 }
 
 void MainWindow::draw_line()
 {
     graph_info.scene->addLine(cur_line, graph_info.pen_segment);
     lines_list.append(cur_line);
+
+    auto *table = ui->PointTableWidget;
+    int i = table->rowCount();
+    table->insertRow(i);
+    QString start_str = "( " + QString::number(cur_line.x1()) + ", " + QString::number(cur_line.y1()) + ")",
+            end_str = "( " + QString::number(cur_line.x2()) + ", " + QString::number(cur_line.y2()) + ")";
+    table->setItem(i, 0, new QTableWidgetItem(start_str));
+    table->setItem(i, 1, new QTableWidgetItem(end_str));
+
     cur_line = QLine();
     dot_count = 0;
 }
@@ -130,6 +161,11 @@ void MainWindow::draw_clipper()
     disable_clipper_input();
     set_clipper_info();
     clipper_exist = true;
+}
+
+void MainWindow::draw_cut_off_line(QLine &line)
+{
+    graph_info.scene->addLine(line, graph_info.pen_cut_off_segment);
 }
 
 void MainWindow::set_clipper_info()
