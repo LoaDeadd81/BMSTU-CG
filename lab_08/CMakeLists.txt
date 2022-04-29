@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(lab_07)
+project(lab_08)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_AUTOMOC ON)
@@ -14,7 +14,7 @@ find_package(Qt6 COMPONENTS
         Widgets
         REQUIRED)
 
-add_executable(lab_07
+add_executable(lab_08
         Errors.h
         Errors.cpp
         Graphics.h
@@ -24,7 +24,7 @@ add_executable(lab_07
         mainwindow.ui
         )
 
-target_link_libraries(lab_07
+target_link_libraries(lab_08
         Qt::Core
         Qt::Gui
         Qt::Widgets
