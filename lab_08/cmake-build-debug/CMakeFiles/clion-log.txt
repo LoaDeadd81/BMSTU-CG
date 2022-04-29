@@ -1,0 +1,1 @@
+CMakeLists.txt not found in C:\Users\vvolk\Documents\GitHub\BMSTU-CG\lab_07 Select CMakeLists.txt
