@@ -11,6 +11,7 @@
 
 #include "Graphics.h"
 #include "Errors.h"
+#include "clipping.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -81,13 +82,15 @@ private slots:
     void on_ButtonGreenLine_clicked();
 
 
-    void on_DrawClipperButton_clicked();
-
     void on_CleanButton_clicked();
 
     void on_DrawButton_clicked();
 
     void on_DrawSegmentButton_clicked();
+
+    void on_CloseClipperButton_clicked();
+
+    void on_AddDorClipperButton_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -99,29 +102,29 @@ private:
 
     QList<QLine> lines_list;
 
-    QRect clipper;
-    int corner_count;
-    bool clipper_exist;
+    QList<QLine> clipper;
+    QLine cur_clipper_line;
+    QPoint first_dot;
+    int clipper_dot_count;
+    bool clipper_closed;
 
     void create_scene();
     void clean_data();
 
-    void add_dot_to_line(QPoint &point);
-    void add_dot_to_clipper(QPoint &point);
+    void add_dot_to_line(QPoint &point, bool shift_modif, bool cntrl_modif);
+    void add_dot_to_clipper(QPoint &point, bool shift_modif);
 
     QLine read_line();
-    QRect read_clipper();
+    QPoint read_clipper();
 
     void draw_line();
-    void draw_clipper();
-    void set_clipper_info();
-    void clean_clipper_info();
+    void draw_clipper_line();
+    void draw_cut_off_line(QLine &line);
 
     void disable_clipper_input();
     void enable_clipper_input();
 
     void clipping();
-    void draw_cut_off_line(QLine &line);
 
 };
 

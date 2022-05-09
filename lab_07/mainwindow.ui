@@ -55,7 +55,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Цвет отсекателя (черный)</string>
+           <string>Цвет отсекателя (чёрный)</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
@@ -228,7 +228,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Цвет отрезков (черный)</string>
+           <string>Цвет отрезков (чёрный)</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
@@ -401,7 +401,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Цвет отсечённых отрезков (черный)</string>
+           <string>Цвет отсечённых отрезков (чёрный)</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>

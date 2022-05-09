@@ -11,6 +11,7 @@
 
 #include "Graphics.h"
 #include "Errors.h"
+#include "clipping.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -99,6 +100,7 @@ private:
 
     QList<QLine> lines_list;
 
+    QPoint clipper_points[2];
     QRect clipper;
     int corner_count;
     bool clipper_exist;
@@ -106,7 +108,7 @@ private:
     void create_scene();
     void clean_data();
 
-    void add_dot_to_line(QPoint &point);
+    void add_dot_to_line(QPoint &point, bool shift_modif);
     void add_dot_to_clipper(QPoint &point);
 
     QLine read_line();
@@ -114,12 +116,15 @@ private:
 
     void draw_line();
     void draw_clipper();
+    void draw_cut_off_line(QLine &line);
+
     void set_clipper_info();
     void clean_clipper_info();
 
     void disable_clipper_input();
     void enable_clipper_input();
 
+    void clipping();
 };
 
 #endif

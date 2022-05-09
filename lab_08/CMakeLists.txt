@@ -22,7 +22,7 @@ add_executable(lab_08
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
-        )
+        clipping.cpp clipping.h)
 
 target_link_libraries(lab_08
         Qt::Core

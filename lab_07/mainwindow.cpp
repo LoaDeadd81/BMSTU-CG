@@ -20,6 +20,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    graph_info.pen_cut_off_segment.setWidth(2);
+
     create_scene();
     clean_data();
 }
@@ -48,6 +50,7 @@ void MainWindow::clean_data()
     clipper_exist = false;
     enable_clipper_input();
     clean_clipper_info();
+    ui->PointTableWidget->setRowCount(0);
 }
 
 void MainWindow::on_CleanButton_clicked()
@@ -59,12 +62,23 @@ void MainWindow::on_DrawButton_clicked()
 {
     try
     {
-        //todo наличие отрезков
-
+        if(!clipper_exist) throw UIError("Введите отсекатель");
+        if (lines_list.empty()) throw UIError("Введите хоть один отрезок");
+        clipping();
     }
     catch (Error &e)
     {
         show_error("Ошибка", e.get_message());
+    }
+}
+
+void MainWindow::clipping()
+{
+    for(auto item : lines_list)
+    {
+        bool is_visible = false;
+        find_visible_segment(is_visible, item, clipper);
+        if(is_visible) draw_cut_off_line(item);
     }
 }
 
@@ -77,7 +91,15 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
         QPoint pos = mouse_event->scenePos().toPoint();
         if (mouse_event->button() == Qt::LeftButton)
         {
-            add_dot_to_line(pos);
+            bool shift_modif = false;
+            switch (QApplication::keyboardModifiers())
+            {
+                case Qt::ShiftModifier:
+                    shift_modif = true;
+                default:
+                    break;
+            }
+            add_dot_to_line(pos, shift_modif);
             if (dot_count == 2) draw_line();
         }
         else if (mouse_event->button() == Qt::RightButton)
@@ -91,45 +113,94 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 
 void MainWindow::on_DrawClipperButton_clicked()
 {
-    cur_line = read_line();
-    draw_line();
-}
-
-void MainWindow::on_DrawSegmentButton_clicked()
-{
     clipper = read_clipper();
     draw_clipper();
 }
 
-void MainWindow::add_dot_to_line(QPoint &point)
+void MainWindow::on_DrawSegmentButton_clicked()
+{
+    cur_line = read_line();
+    draw_line();
+}
+
+void MainWindow::add_dot_to_line(QPoint &point, bool shift_modif)
 {
     if (dot_count == 0) cur_line.setP1(point);
-    else cur_line.setP2(point);
+    else
+    {
+        if (shift_modif)
+        {
+            if (abs(cur_line.p1().x() - point.x()) < abs(cur_line.p1().y() - point.y()))
+                point.setX(cur_line.p1().x());
+            else
+                point.setY(cur_line.p1().y());
+        }
+        cur_line.setP2(point);
+    }
     dot_count++;
 }
 
 void MainWindow::add_dot_to_clipper(QPoint &point)
 {
-    if (clipper_exist) throw UIError("Отсекатель уже введён");
-    if (corner_count == 0) clipper.setTopLeft(point);
-    else clipper.setBottomRight(point);
-    corner_count++;
+    try
+    {
+        if (clipper_exist) throw UIError("Отсекатель уже введён");
+        if (corner_count == 0) clipper_points[0] = point;
+        else
+        {
+            clipper_points[1] = point;
+            clipper = QRect(clipper_points[0], clipper_points[1]);
+        }
+        corner_count++;
+    }
+    catch (Error &e)
+    {
+        show_error("Ошибка", e.get_message());
+    }
 }
 
 void MainWindow::draw_line()
 {
     graph_info.scene->addLine(cur_line, graph_info.pen_segment);
     lines_list.append(cur_line);
+
+    auto *table = ui->PointTableWidget;
+    int i = table->rowCount();
+    table->insertRow(i);
+    QString start_str = "( " + QString::number(cur_line.x1()) + ", " + QString::number(cur_line.y1()) + ")",
+            end_str = "( " + QString::number(cur_line.x2()) + ", " + QString::number(cur_line.y2()) + ")";
+    table->setItem(i, 0, new QTableWidgetItem(start_str));
+    table->setItem(i, 1, new QTableWidgetItem(end_str));
+
     cur_line = QLine();
     dot_count = 0;
 }
 
 void MainWindow::draw_clipper()
 {
-    graph_info.scene->addRect(clipper, graph_info.pen_clipper);
-    disable_clipper_input();
-    set_clipper_info();
-    clipper_exist = true;
+    try
+    {
+        if (clipper.left() >= clipper.right() || clipper.bottom() >= clipper.top())
+        {
+            clipper = QRect();
+            corner_count = 0;
+            throw UIError("Неверные данные для отсекателя. Первым кликом "
+                          "задаётся левая верхняя вершина, вторым правая нижняя.");
+        }
+        graph_info.scene->addRect(clipper.left(), clipper.bottom(), clipper.right() - clipper.left(), clipper.top() - clipper.bottom(), graph_info.pen_clipper);
+        disable_clipper_input();
+        set_clipper_info();
+        clipper_exist = true;
+    }
+    catch (Error &e)
+    {
+        show_error("Ошибка", e.get_message());
+    }
+}
+
+void MainWindow::draw_cut_off_line(QLine &line)
+{
+    graph_info.scene->addLine(line, graph_info.pen_cut_off_segment);
 }
 
 void MainWindow::set_clipper_info()

@@ -10,6 +10,7 @@ CONFIG += c++11
 
 SOURCES += \
     Errors.cpp \
+    clipping.cpp \
     main.cpp \
     mainwindow.cpp
 
@@ -17,6 +18,7 @@ HEADERS += \
     Edge.h \
     Errors.h \
     Graphics.h \
+    clipping.h \
     mainwindow.h
 
 FORMS += \
@@ -26,3 +28,7 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    CMakeLists.txt \
+    lab_08.pro.user

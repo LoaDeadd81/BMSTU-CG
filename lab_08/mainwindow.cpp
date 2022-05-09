@@ -43,11 +43,61 @@ void MainWindow::clean_data()
     cur_line = QLine();
     dot_count = 0;
     lines_list.clear();
-    clipper = QRect();
-    corner_count = 0;
-    clipper_exist = false;
+    ui->PointTableWidget->setRowCount(0);
+
+    clipper.clear();
+    clipper_dot_count = 0;
+    clipper_closed = false;
     enable_clipper_input();
-    clean_clipper_info();
+    ui->ClipperPointTableWidget->setRowCount(0);
+}
+
+//todo параллельные линии
+
+bool MainWindow::eventFilter(QObject *watched, QEvent *event)
+{
+    if (event->type() == QEvent::GraphicsSceneMousePress)
+    {
+        QGraphicsSceneMouseEvent *mouse_event = static_cast<QGraphicsSceneMouseEvent *>(event);
+        QPoint pos = mouse_event->scenePos().toPoint();
+        bool shift_modif = false, control_modif = false;
+        if (mouse_event->button() == Qt::LeftButton)
+        {
+            switch (QApplication::keyboardModifiers())
+            {
+                case Qt::ShiftModifier:
+                {
+                    shift_modif = true;
+                    break;
+                }
+                case Qt::ControlModifier:
+                {
+                    control_modif = true;
+                    break;
+                }
+                default:
+                    break;
+            }
+            add_dot_to_line(pos, shift_modif, control_modif);
+            if (dot_count == 2) draw_line();
+        }
+        else if (mouse_event->button() == Qt::RightButton)
+        {
+            switch (QApplication::keyboardModifiers())
+            {
+                case Qt::ShiftModifier:
+                {
+                    shift_modif = true;
+                    break;
+                }
+                default:
+                    break;
+            }
+            add_dot_to_clipper(pos, shift_modif);
+            if (clipper_dot_count >= 2 && !clipper_closed) draw_clipper_line();
+        }
+    }
+    return false;
 }
 
 void MainWindow::on_CleanButton_clicked()
@@ -59,8 +109,9 @@ void MainWindow::on_DrawButton_clicked()
 {
     try
     {
-        if(!clipper_exist) throw UIError("Введите отсекатель");
-        if(lines_list.empty()) throw UIError("Введите хоть один отрезок");
+        if (clipper_dot_count < 2) throw UIError("Введите отсекатель");
+        if (!clipper_closed) throw UIError("Замкните отсекатель");
+        if (lines_list.empty()) throw UIError("Введите хоть один отрезок");
         clipping();
     }
     catch (Error &e)
@@ -70,38 +121,20 @@ void MainWindow::on_DrawButton_clicked()
 }
 
 
-bool MainWindow::eventFilter(QObject *watched, QEvent *event)
-{
-    if (event->type() == QEvent::GraphicsSceneMousePress)
-    {
-        QGraphicsSceneMouseEvent *mouse_event = static_cast<QGraphicsSceneMouseEvent *>(event);
-        QPoint pos = mouse_event->scenePos().toPoint();
-        if (mouse_event->button() == Qt::LeftButton)
-        {
-            add_dot_to_line(pos);
-            if (dot_count == 2) draw_line();
-        }
-        else if (mouse_event->button() == Qt::RightButton)
-        {
-            add_dot_to_clipper(pos);
-            if (corner_count == 2) draw_clipper();
-        }
-    }
-    return false;
-}
-
-void MainWindow::on_DrawClipperButton_clicked()
+void MainWindow::on_AddDorClipperButton_clicked()
 {
     try
     {
-        clipper = read_clipper();
-        draw_clipper();
+        QPoint tmp = read_clipper();
+        add_dot_to_clipper(tmp, false);
+        if (clipper_dot_count >= 2) draw_clipper_line();
     }
     catch (Error &e)
     {
         show_error("Ошибка", e.get_message());
     }
 }
+
 
 void MainWindow::on_DrawSegmentButton_clicked()
 {
@@ -116,21 +149,94 @@ void MainWindow::on_DrawSegmentButton_clicked()
     }
 }
 
-void MainWindow::add_dot_to_line(QPoint &point)
-{
-    if (dot_count == 0) cur_line.setP1(point);
-    else cur_line.setP2(point);
-    dot_count++;
-}
-
-void MainWindow::add_dot_to_clipper(QPoint &point)
+void MainWindow::on_CloseClipperButton_clicked()
 {
     try
     {
-        if (clipper_exist) throw UIError("Отсекатель уже введён");
-        if (corner_count == 0) clipper.setTopLeft(point);
-        else clipper.setBottomRight(point);
-        corner_count++;
+        if (clipper_closed) throw UIError("Отсекатель уже замкнут");
+        if (clipper_dot_count < 3) throw UIError("Недостаточно точек для замыкания");
+        cur_clipper_line.setP1(cur_clipper_line.p2());
+        cur_clipper_line.setP2(first_dot);
+        draw_clipper_line();
+        clipper_closed = true;
+        disable_clipper_input();
+    }
+    catch (Error &e)
+    {
+        show_error("Ошибка", e.get_message());
+    }
+}
+
+void MainWindow::clipping()
+{
+    QList<QVector2D> clipper_vec;
+    qline_to_qvector2d(clipper_vec, clipper);
+    int n_orientation;
+    if (!convexity_check(n_orientation, clipper_vec)) throw UIError("Отсекатель должен быть выпуклым");
+    if (n_orientation == NO_N) throw UIError("Отсекатель вырожден в прямую");
+    QList<QVector2D> n;
+    get_n(n, n_orientation, clipper_vec);
+    for (auto item: lines_list)
+    {
+        bool is_visible;
+        QLine res = find_visible_segment(is_visible, item, n, clipper);
+        if (is_visible) draw_cut_off_line(res);
+    }
+}
+
+void MainWindow::add_dot_to_line(QPoint &point, bool shift_modif, bool cntrl_modif)
+{
+    if (dot_count == 0) cur_line.setP1(point);
+    else
+    {
+        if (shift_modif)
+        {
+            if (abs(cur_line.p1().x() - point.x()) < abs(cur_line.p1().y() - point.y()))
+                point.setX(cur_line.p1().x());
+            else
+                point.setY(cur_line.p1().y());
+        }
+        if (cntrl_modif)
+        {
+            int i = ui->spinBox->value();
+            if (!clipper.empty() && i < clipper.size())
+            {
+                QLine line = clipper.at(i - 1);
+                double m = double(line.y2() - line.y1()) / double(line.x2() - line.x1());
+                double dx = point.x() - cur_line.x1();
+                double x = point.x(),
+                        y = cur_line.y1() + m * dx;
+                point = {int(x), int(y)};
+            }
+        }
+        cur_line.setP2(point);
+    }
+    dot_count++;
+}
+
+void MainWindow::add_dot_to_clipper(QPoint &point, bool shift_modif)
+{
+    try
+    {
+        if (clipper_closed) throw UIError("Отсекатель уже введён");
+        if (clipper_dot_count == 0)
+        {
+            first_dot = point;
+            cur_clipper_line.setP1(point);
+        }
+        else
+        {
+            if (clipper_dot_count > 1) cur_clipper_line.setP1(cur_clipper_line.p2());
+            if (shift_modif)
+            {
+                if (abs(cur_line.p1().x() - point.x()) < abs(cur_line.p1().y() - point.y()))
+                    point.setX(cur_line.p1().x());
+                else
+                    point.setY(cur_line.p1().y());
+            }
+            cur_clipper_line.setP2(point);
+        }
+        clipper_dot_count++;
     }
     catch (Error &e)
     {
@@ -155,12 +261,20 @@ void MainWindow::draw_line()
     dot_count = 0;
 }
 
-void MainWindow::draw_clipper()
+void MainWindow::draw_clipper_line()
 {
-    graph_info.scene->addRect(clipper, graph_info.pen_clipper);
-    disable_clipper_input();
-    set_clipper_info();
-    clipper_exist = true;
+    graph_info.scene->addLine(cur_clipper_line, graph_info.pen_clipper);
+    clipper.append(cur_clipper_line);
+
+    auto *table = ui->ClipperPointTableWidget;
+    int i = table->rowCount();
+    table->insertRow(i);
+    QString start_str =
+            "( " + QString::number(cur_clipper_line.x1()) + ", " + QString::number(cur_clipper_line.y1()) + ")",
+            end_str =
+            "( " + QString::number(cur_clipper_line.x2()) + ", " + QString::number(cur_clipper_line.y2()) + ")";
+    table->setItem(i, 0, new QTableWidgetItem(start_str));
+    table->setItem(i, 1, new QTableWidgetItem(end_str));
 }
 
 void MainWindow::draw_cut_off_line(QLine &line)
@@ -168,37 +282,6 @@ void MainWindow::draw_cut_off_line(QLine &line)
     graph_info.scene->addLine(line, graph_info.pen_cut_off_segment);
 }
 
-void MainWindow::set_clipper_info()
-{
-    ui->lt_x_clipperLineEdit->setText(QString::number(clipper.left()));
-    ui->lt_y_clipperLineEdit->setText(QString::number(clipper.top()));
-    ui->rb_x_clipperLineEdit->setText(QString::number(clipper.right()));
-    ui->rb_y_clipperLineEdit->setText(QString::number(clipper.bottom()));
-}
-
-void MainWindow::clean_clipper_info()
-{
-    ui->lt_x_clipperLineEdit->clear();
-    ui->lt_y_clipperLineEdit->clear();
-    ui->rb_x_clipperLineEdit->clear();
-    ui->rb_y_clipperLineEdit->clear();
-}
-
-void MainWindow::disable_clipper_input()
-{
-    ui->lt_x_clipperLineEdit->setDisabled(true);
-    ui->lt_y_clipperLineEdit->setDisabled(true);
-    ui->rb_x_clipperLineEdit->setDisabled(true);
-    ui->rb_y_clipperLineEdit->setDisabled(true);
-}
-
-void MainWindow::enable_clipper_input()
-{
-    ui->lt_x_clipperLineEdit->setDisabled(false);
-    ui->lt_y_clipperLineEdit->setDisabled(false);
-    ui->rb_x_clipperLineEdit->setDisabled(false);
-    ui->rb_y_clipperLineEdit->setDisabled(false);
-}
 
 QLine MainWindow::read_line()
 {
@@ -208,12 +291,23 @@ QLine MainWindow::read_line()
     return {start, end};
 }
 
-QRect MainWindow::read_clipper()
+QPoint MainWindow::read_clipper()
 {
-    QPoint lt = read_point(ui->lt_x_clipperLineEdit, ui->lt_y_clipperLineEdit),
-            rb = read_point(ui->rb_x_clipperLineEdit, ui->rb_y_clipperLineEdit);
-    corner_count = 2;
-    return {lt, rb};
+    return read_point(ui->x_clipperLineEdit, ui->y_clipperLineEdit);
+}
+
+void MainWindow::disable_clipper_input()
+{
+    ui->x_clipperLineEdit->setDisabled(true);
+    ui->y_clipperLineEdit->setDisabled(true);
+    ui->AddDorClipperButton->setDisabled(true);
+}
+
+void MainWindow::enable_clipper_input()
+{
+    ui->x_clipperLineEdit->setDisabled(false);
+    ui->y_clipperLineEdit->setDisabled(false);
+    ui->AddDorClipperButton->setDisabled(false);
 }
 
 int checked_int_read(QLineEdit *line);
@@ -413,3 +507,5 @@ void MainWindow::on_ButtonGreenLine_clicked()
     graph_info.pen_cut_off_segment.setColor(GREEN);
     ui->LIneColorLabel->setText("Цвет отсечённых отрезков (зелёный)");
 }
+
+
