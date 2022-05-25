@@ -27,9 +27,3 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-DISTFILES += \
-<<<<<<<< HEAD:lab_05/lab_05.pro
-    lab_05.pro.user
-========
-    lab_06.pro.user
->>>>>>>> lab_06:lab_06/lab_06.pro

@@ -20,6 +20,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    graph_info.pen_cut_off_segment.setWidth(2);
+
     create_scene();
     clean_data();
 }
@@ -45,6 +47,12 @@ void MainWindow::clean_data()
     lines_list.clear();
     ui->PointTableWidget->setRowCount(0);
 
+    clean_clipper_data();
+
+}
+
+void MainWindow::clean_clipper_data()
+{
     clipper.clear();
     clipper_dot_count = 0;
     clipper_closed = false;
@@ -169,6 +177,8 @@ void MainWindow::on_CloseClipperButton_clicked()
 
 void MainWindow::clipping()
 {
+    if(self_intersection_check(clipper)) throw UIError("Отсекатель не должен само пересекаться");
+
     QList<QVector2D> clipper_vec;
     qline_to_qvector2d(clipper_vec, clipper);
     int n_orientation;
@@ -218,7 +228,8 @@ void MainWindow::add_dot_to_clipper(QPoint &point, bool shift_modif)
 {
     try
     {
-        if (clipper_closed) throw UIError("Отсекатель уже введён");
+//        if (clipper_closed) throw UIError("Отсекатель уже введён");
+        if (clipper_closed) redraw_without_clipper();
         if (clipper_dot_count == 0)
         {
             first_dot = point;
@@ -229,10 +240,10 @@ void MainWindow::add_dot_to_clipper(QPoint &point, bool shift_modif)
             if (clipper_dot_count > 1) cur_clipper_line.setP1(cur_clipper_line.p2());
             if (shift_modif)
             {
-                if (abs(cur_line.p1().x() - point.x()) < abs(cur_line.p1().y() - point.y()))
-                    point.setX(cur_line.p1().x());
+                if (abs(cur_clipper_line.p1().x() - point.x()) < abs(cur_clipper_line.p1().y() - point.y()))
+                    point.setX(cur_clipper_line.p1().x());
                 else
-                    point.setY(cur_line.p1().y());
+                    point.setY(cur_clipper_line.p1().y());
             }
             cur_clipper_line.setP2(point);
         }
@@ -329,6 +340,13 @@ int checked_int_read(QLineEdit *line)
         throw UIError("Исправьте поля выделенные красным. Ожидается ввод целого числа");
     }
     return x;
+}
+
+void MainWindow::redraw_without_clipper()
+{
+    clean_clipper_data();
+    graph_info.scene->clear();
+    for(auto it : lines_list) graph_info.scene->addLine(it);
 }
 
 void show_error(QString title, QString message)

@@ -123,7 +123,7 @@ int code_sum(const int *code)
 int code_and(const int *code1, const int *code2)
 {
     int res = 0;
-    for (int i = 0; i < 4; i++) res += (code1[i] + code2[i] == 2) ? 1 : 0;
+    for (int i = 0; i < 4; i++) res += code1[i] * code2[i];
     return res;
 }
 

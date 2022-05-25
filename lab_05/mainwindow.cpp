@@ -230,10 +230,10 @@ void MainWindow::on_CloseFigureButton_clicked()
 {
     try
     {
+        if (is_closed && !edge_list.empty())
+            throw UIError("Фигура уже замкнута");
         if (line_count < 2)
             throw UIError("Недостаточно отрезков для замыкания фигуры. Необходимо минимум 2.");
-        if (is_closed)
-            throw UIError("Фигура уже замкнута");
 
         cur_start = cur_end;
         cur_end = first_point;

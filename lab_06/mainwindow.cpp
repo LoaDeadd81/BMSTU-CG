@@ -391,10 +391,10 @@ void MainWindow::check_row(QPoint p, int x_right)
 {
     int x = p.x(), y = p.y();
     if(y <= 0 || y >= height) return;
-    while (x <= x_right && x < width)
+    while (x <= x_right)
     {
         bool flag = false;
-        while (!eq_border_color({x, y}) && !eq_filled_color({x, y}) && x < x_right && x < width)
+        while (!eq_border_color({x, y}) && !eq_filled_color({x, y}) && x < x_right)
         {
             flag = true;
             x++;
@@ -406,7 +406,7 @@ void MainWindow::check_row(QPoint p, int x_right)
             flag = false;
         }
         int tmp_x = x;
-        while ((eq_border_color({x, y}) || eq_filled_color({x, y})) && x < x_right  && x < width) x++;
+        while ((eq_border_color({x, y}) || eq_filled_color({x, y})) && x < x_right) x++;
         if (x == tmp_x) x++;
     }
 }

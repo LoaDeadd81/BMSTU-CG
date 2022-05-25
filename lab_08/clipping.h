@@ -21,4 +21,6 @@ void get_n(QList<QVector2D> &n, int n_orientation, const QList<QVector2D> &clipp
 
 QLine find_visible_segment(bool &is_visible, const QLine &line, const QList<QVector2D> &n, const QList<QLine> &clipper);
 
+bool self_intersection_check(const QList<QLine> clipper);
+
 #endif

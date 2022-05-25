@@ -45,12 +45,19 @@ void MainWindow::clean_data()
     cur_line = QLine();
     dot_count = 0;
     lines_list.clear();
-    clipper = QRect();
-    corner_count = 0;
-    clipper_exist = false;
-    enable_clipper_input();
-    clean_clipper_info();
     ui->PointTableWidget->setRowCount(0);
+
+//    clipper_exist = false;
+//    enable_clipper_input();
+//    clean_clipper_info();
+//    corner_count = 0;
+//    clipper = QRect();
+
+    clipper_exist = true;
+    corner_count = 2;
+    clipper = QRect(QPoint(400, 700), QPoint(1000, 300));
+    draw_clipper();
+    disable_clipper_input();
 }
 
 void MainWindow::on_CleanButton_clicked()

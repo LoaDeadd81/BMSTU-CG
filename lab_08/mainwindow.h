@@ -110,6 +110,7 @@ private:
 
     void create_scene();
     void clean_data();
+    void clean_clipper_data();
 
     void add_dot_to_line(QPoint &point, bool shift_modif, bool cntrl_modif);
     void add_dot_to_clipper(QPoint &point, bool shift_modif);
@@ -125,6 +126,7 @@ private:
     void enable_clipper_input();
 
     void clipping();
+    void redraw_without_clipper();
 
 };
 

@@ -129,3 +129,65 @@ QLine get_new_line(const QLine &line, double t_start, double t_end)
             y2 = round(line.y1() + double(line.y2() - line.y1()) * t_end);
     return {x1, y1, x2, y2};
 }
+
+bool line_intersection(QLine a, QLine b)
+{
+//    int dx1 = a.x2() - a.x1(), dy1 = a.y2() - a.y1();
+//    int dx2 = b.x2() - b.x1(), dy2 = b.y2() - b.y1();
+//    int dxx = a.x1() - b.x1(), dyy = a.y1() - b.y1();
+//    int div, mul;
+//
+//    int maxx1 = fmax(a.x1(), a.x2()), maxy1 = fmax(a.y1(), a.y2());
+//    int minx1 = fmin(a.x1(), a.x2()), miny1 = fmin(a.y1(), a.y2());
+//    int maxx2 = fmax(b.x1(), b.y2()), maxy2 = fmax(b.y1(), b.y2());
+//    int minx2 = fmin(b.x1(), b.y2()), miny2 = fmin(b.y1(), b.y2());
+//
+//    if (minx1 > maxx2 || maxx1 < minx2 || miny1 > maxy2 || maxy1 < miny2)
+//        return false;
+//
+//    div = (dy2 * dx1 - dx2 * dy1);
+//    if (div == 0)
+//        return false;
+//    if (div > 0)
+//    {
+//        mul = dx1 * dyy - dy1 * dxx;
+//        if (mul < 0 || mul > div)
+//            return false;
+//        mul = dx2 * dyy - dy2 * dxx;
+//        if (mul < 0 || mul > div)
+//            return false;
+//    }
+//    mul = dx1 * dyy - dy1 * dxx;
+//    if (mul < 0 || mul > -div)
+//        return false;
+//    mul = dx2 * dyy - dy2 * dxx;
+//    if (mul < 0 || mul > -div)
+//        return false;
+//
+//    return true;
+
+    double x1 = a.x1(), y1 = a.y1(), x2 = a.x2(), y2 = a.y2();
+    double x3 = b.x1(), y3 = b.y1(), x4 = b.x2(), y4 = b.y2();
+    double t1_ch = (x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3),
+            t2_ch = (x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3),
+        zn = (y4 - y3) * (x2 - x1) - (x4 - x3)*(y2 -  y1);
+    if(zn == 0)
+    {
+        if(t1_ch == 0)
+            return true;
+        return false;
+    }
+    double t1 = t1_ch / zn, t2 = t2_ch / zn;
+    if((t1 > 0 && t1 < 1) && (t2 > 0 && t2 < 1)) return true;
+    return false;
+
+}
+
+bool self_intersection_check(const QList<QLine> clipper)
+{
+    bool res = false;
+    for (auto i = clipper.begin(); !res && i != clipper.end(); i++)
+        for (auto j = i + 1; !res && j != clipper.end(); j++)
+            res = line_intersection(*i, *j);
+    return res;
+}

@@ -27,7 +27,8 @@
            </font>
           </property>
           <property name="text">
-           <string>Алгоритм заполнения с упорядоченныйми рёбрами</string>
+           <string>Алгоритм заполнения с упорядоченныйм 
+ списком рёбер</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
