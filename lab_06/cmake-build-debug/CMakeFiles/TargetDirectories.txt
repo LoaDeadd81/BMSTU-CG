@@ -1,5 +1,0 @@
-C:/Users/vvolk/Documents/GitHub/BMSTU-CG/lab_06/cmake-build-debug/CMakeFiles/lab_06.dir
-C:/Users/vvolk/Documents/GitHub/BMSTU-CG/lab_06/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/vvolk/Documents/GitHub/BMSTU-CG/lab_06/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-C:/Users/vvolk/Documents/GitHub/BMSTU-CG/lab_06/cmake-build-debug/CMakeFiles/lab_06_autogen_timestamp_deps.dir
-C:/Users/vvolk/Documents/GitHub/BMSTU-CG/lab_06/cmake-build-debug/CMakeFiles/lab_06_autogen.dir
